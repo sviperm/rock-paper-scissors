@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function capitalize(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        function game() {
+            let computerWinScore = 0;
+            let playerWinScore = 0;
+
+            function showScore() {
+                return `Computer: ${computerWinScore}\nPlayer: ${playerWinScore}`;
+            }
+
+            function showCumputerWonRoundResult(computerSelection, playerSelection) {
+                computerWinScore++;
+                return `Round LOST! ${capitalize(computerSelection)} beats ${capitalize(playerSelection)}`;
+            }
+
+            function showPlayerWonRoundResult(computerSelection, playerSelection) {
+                playerWinScore++;
+                return `Round WON! ${capitalize(playerSelection)} beats ${capitalize(computerSelection)}`;
+            }
+
+            function showGameResults() {
+                return computerWinScore > playerWinScore ? "Computer WON" : "Player WON"
+            }
+
+            function computerPlay() {
+                const randomNum = Math.floor(Math.random() * (4 - 1)) + 1;
+                switch (randomNum) {
+                    case 1:
+                        return "rock";
+                    case 2:
+                        return "paper";
+                    case 3:
+                        return "scissors";
+                }
+            }
+
+            while (computerWinScore < 5 && playerWinScore < 5) {
+                function playRound(playerSelection, computerSelection) {
+                    switch (playerSelection) {
+                        case "rock":
+                            switch (computerSelection) {
+                                case "rock":
+                                    return "Draw";
+                                case "paper":
+                                    return showCumputerWonRoundResult(computerSelection, playerSelection);
+                                case "scissors":
+                                    return showPlayerWonRoundResult(computerSelection, playerSelection);
+                            }
+                        case "paper":
+                            switch (computerSelection) {
+                                case "rock":
+                                    return showPlayerWonRoundResult(computerSelection, playerSelection);
+                                case "paper":
+                                    return "Draw";
+                                case "scissors":
+                                    return showCumputerWonRoundResult(computerSelection, playerSelection);
+                            }
+                        case "scissors":
+                            switch (computerSelection) {
+                                case "rock":
+                                    return showCumputerWonRoundResult(computerSelection, playerSelection);
+                                case "paper":
+                                    return showPlayerWonRoundResult(computerSelection, playerSelection);
+                                case "scissors":
+                                    return "Draw";
+                            }
+                    }
+                }
+
+                const playerSelection = prompt("Rock, paper, scissors?", computerPlay()).toLowerCase();
+                const computerSelection = computerPlay();
+
+                console.log(playRound(playerSelection, computerSelection));
+                console.log(showScore());
+            }
+            console.log(showGameResults());
+        }
+        game();
+    </script>
+</body>
+
+</html>
