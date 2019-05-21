@@ -7,11 +7,46 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        .hand {
+        html {
+            background: rgba(228, 241, 255, 0.55);
+        }
+
+        body {
+            text-align: center;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 0.8fr 1fr 0.8fr;
+            place-items: center center;
+            gap: 8px;
+            margin-bottom: 50px;
+        }
+
+        .big-emoji {
+            font-size: 4rem;
+        }
+
+        .mid-emoji {
+            font-size: 2.5rem;
+        }
+
+        .game-title {
+            grid-column: 2 / 3;
+        }
+
+        .buttons {
+            grid-column: 2 / 3;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn {
             border: 0;
             vertical-align: baseline;
             padding: 0;
-            display: inline-block;
+            display: inline-flex;
+            justify-content: center;
             background-color: #fff;
             width: 120px;
             height: 120px;
@@ -22,24 +57,9 @@
             -webkit-transform: translateY(0);
             -webkit-transition: all .6s cubic-bezier(0.165, 0.84, 0.44, 1);
             transition: all .6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            font-size: 4rem;
         }
 
-        .hand:focus {
-            outline: none;
-        }
-
-        .hand:hover:after {
-            opacity: 1;
-        }
-
-        .hand:hover {
-            -webkit-transform: scale(1.25, 1.25);
-            transform: scale(1.25, 1.25);
-        }
-
-
-        .hand:after {
+        .btn:after {
             content: "";
             border-radius: 5px;
             position: absolute;
@@ -52,13 +72,60 @@
             -webkit-transition: all .6s cubic-bezier(0.165, 0.84, 0.44, 1);
             transition: all .6s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
+
+        .rock::before {
+            content: "✊";
+        }
+
+        .paper::before {
+            content: "🖐️";
+        }
+
+        .scissors::before {
+            content: "✌️";
+        }
+
+        .btn:focus {
+            outline: none;
+        }
+
+        .btn:hover:after {
+            opacity: 1;
+        }
+
+        .btn:hover {
+            -webkit-transform: scale(1.25, 1.25);
+            transform: scale(1.25, 1.25);
+        }
+
+        .human {
+            grid-column: 1 / 2;
+        }
+
+        .score {
+            grid-column: 2 / 3;
+            font-size: 2.5rem;
+        }
+
+        .machine {
+            grid-column: 3 / 4;
+        }
     </style>
 </head>
 
 <body>
-    <button class="hand rock" data-choice="rock">✊</button>
-    <button class="hand paper" data-choice="paper">🖐️</button>
-    <button class="hand scissors" data-choice="scissors">✌️</button>
+    <div class="container">
+        <h3>You</h3>
+        <h1 class="game-title">Rock-paper-scissors</h1>
+        <h3>Machine</h3>
+        <div class="big-emoji"> 🧑 </div>
+        <div class="buttons">
+            <button class="btn rock big-emoji" data-choice="rock"></button>
+            <button class="btn paper big-emoji" data-choice="paper"></button>
+            <button class="btn scissors big-emoji" data-choice="scissors"></button>
+        </div>
+        <div id="after_this" class="big-emoji"> 🤖 </div>
+    </div>
 </body>
 
 <script>
@@ -67,27 +134,34 @@
     }
 
     function game() {
+        let step = 0;
         let computerWinScore = 0;
         let playerWinScore = 0;
         let gameOver = false;
-        let hands = document.querySelectorAll('button.hand');
+        const btns = document.querySelectorAll('button.btn');
+        const container = document.querySelector('.container');
 
-        function showScore() {
-            return `Computer: ${computerWinScore}\nPlayer: ${playerWinScore}`;
-        }
+        function displayRoundResults(playerSelection, computerSelection) {
+            const humanResult = document.createElement('div');
+            humanResult.classList.add('human', 'mid-emoji', playerSelection);
 
-        function showCumputerWonRoundResult(computerSelection, playerSelection) {
-            computerWinScore++;
-            return `Round LOST! ${capitalize(computerSelection)} beats ${capitalize(playerSelection)}`;
-        }
+            const machineResult = document.createElement('div');
+            machineResult.classList.add('machine', 'mid-emoji', computerSelection);
 
-        function showPlayerWonRoundResult(computerSelection, playerSelection) {
-            playerWinScore++;
-            return `Round WON! ${capitalize(playerSelection)} beats ${capitalize(computerSelection)}`;
-        }
+            const score = document.createElement('div');
+            score.classList.add('score');
+            score.textContent = `${playerWinScore} : ${computerWinScore}`;
 
-        function showGameResults() {
-            return computerWinScore > playerWinScore ? "Computer WON" : "Player WON"
+            if (step === 0) {
+                container.appendChild(humanResult)
+                container.appendChild(score)
+                container.appendChild(machineResult)
+            } else {
+                const referenceNode = document.querySelector('#after_this');
+                referenceNode.parentNode.insertBefore(machineResult, referenceNode.nextSibling);
+                referenceNode.parentNode.insertBefore(score, referenceNode.nextSibling);
+                referenceNode.parentNode.insertBefore(humanResult, referenceNode.nextSibling);
+            }
         }
 
         function computerPlay() {
@@ -105,34 +179,54 @@
         function playRound(playerSelection, computerSelection) {
             switch (playerSelection) {
                 case "rock":
+                    // console.log("h - rock");
                     switch (computerSelection) {
                         case "rock":
-                            return "Draw";
+                            // console.log("m - rock");
+                            break;
                         case "paper":
-                            return showCumputerWonRoundResult(computerSelection, playerSelection);
+                            // console.log("m - paper");
+                            computerWinScore++;
+                            break;
                         case "scissors":
-                            return showPlayerWonRoundResult(computerSelection, playerSelection);
+                            // console.log("m - scissors");
+                            playerWinScore++;
+                            break;
                     }
+                    break;
                 case "paper":
+                    // console.log("h - paper");
                     switch (computerSelection) {
                         case "rock":
-                            return showPlayerWonRoundResult(computerSelection, playerSelection);
+                            // console.log("m - rock");
+                            playerWinScore++;
+                            break;
                         case "paper":
-                            return "Draw";
+                            // console.log("m - paper");
+                            break;
                         case "scissors":
-                            return showCumputerWonRoundResult(computerSelection, playerSelection);
+                            // console.log("m - scissors");
+                            computerWinScore++;
+                            break;
                     }
+                    break;
                 case "scissors":
+                    // console.log("h - scissors");
                     switch (computerSelection) {
                         case "rock":
-                            return showCumputerWonRoundResult(computerSelection, playerSelection);
+                            // console.log("m - rock");
+                            computerWinScore++;
+                            break;
                         case "paper":
-                            return showPlayerWonRoundResult(computerSelection, playerSelection);
+                            // console.log("m - paper");
+                            playerWinScore++;
+                            break;
                         case "scissors":
-                            return "Draw";
+                            // console.log("m - scissors");
+                            break;
                     }
+                    break;
             }
-
         }
 
         function finishGame() {
@@ -141,27 +235,19 @@
             gameOver = true;
         }
 
-        hands.forEach(function (hand) {
-            hand.addEventListener('click', function (event) {
-                if (gameOver) {
-                    console.log("Game is over, reload page");
-                } else {
-                    const playerSelection = event.toElement.dataset['choice'];
-                    const computerSelection = computerPlay();
-                    console.log(playRound(playerSelection, computerSelection));
-                    console.log(`Computer: ${computerWinScore}\nHuman: ${playerWinScore}`)
-                    if (computerWinScore === 5) {
-                        console.log(`Machine WINS`);
-                        finishGame();
-                    } else if (playerWinScore === 5) {
-                        console.log(`Human WINS`);
-                        finishGame();
-                    };
+        btns.forEach(function (btn) {
+            btn.addEventListener('click', function (event) {
+                if (!gameOver) {
+                    step++;
+                    let playerSelection = event.toElement.dataset['choice'];
+                    let computerSelection = computerPlay();
+                    playRound(playerSelection, computerSelection);
+                    displayRoundResults(playerSelection, computerSelection);
+                    if (computerWinScore === 5 || playerWinScore === 5) finishGame(computerWinScore, playerWinScore);
                 };
             });
         });
     };
-
     game();
 </script>
 
