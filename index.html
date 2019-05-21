@@ -6,91 +6,163 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <style>
+        .hand {
+            border: 0;
+            vertical-align: baseline;
+            padding: 0;
+            display: inline-block;
+            background-color: #fff;
+            width: 120px;
+            height: 120px;
+            border-radius: 5px;
+            margin: 10px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+            position: relative;
+            -webkit-transform: translateY(0);
+            -webkit-transition: all .6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transition: all .6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            font-size: 4rem;
+        }
+
+        .hand:focus {
+            outline: none;
+        }
+
+        .hand:hover:after {
+            opacity: 1;
+        }
+
+        .hand:hover {
+            -webkit-transform: scale(1.25, 1.25);
+            transform: scale(1.25, 1.25);
+        }
+
+
+        .hand:after {
+            content: "";
+            border-radius: 5px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            -webkit-transition: all .6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transition: all .6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+    </style>
 </head>
 
 <body>
-    <script>
-        function capitalize(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
-
-        function game() {
-            let computerWinScore = 0;
-            let playerWinScore = 0;
-
-            function showScore() {
-                return `Computer: ${computerWinScore}\nPlayer: ${playerWinScore}`;
-            }
-
-            function showCumputerWonRoundResult(computerSelection, playerSelection) {
-                computerWinScore++;
-                return `Round LOST! ${capitalize(computerSelection)} beats ${capitalize(playerSelection)}`;
-            }
-
-            function showPlayerWonRoundResult(computerSelection, playerSelection) {
-                playerWinScore++;
-                return `Round WON! ${capitalize(playerSelection)} beats ${capitalize(computerSelection)}`;
-            }
-
-            function showGameResults() {
-                return computerWinScore > playerWinScore ? "Computer WON" : "Player WON"
-            }
-
-            function computerPlay() {
-                const randomNum = Math.floor(Math.random() * (4 - 1)) + 1;
-                switch (randomNum) {
-                    case 1:
-                        return "rock";
-                    case 2:
-                        return "paper";
-                    case 3:
-                        return "scissors";
-                }
-            }
-
-            while (computerWinScore < 5 && playerWinScore < 5) {
-                function playRound(playerSelection, computerSelection) {
-                    switch (playerSelection) {
-                        case "rock":
-                            switch (computerSelection) {
-                                case "rock":
-                                    return "Draw";
-                                case "paper":
-                                    return showCumputerWonRoundResult(computerSelection, playerSelection);
-                                case "scissors":
-                                    return showPlayerWonRoundResult(computerSelection, playerSelection);
-                            }
-                        case "paper":
-                            switch (computerSelection) {
-                                case "rock":
-                                    return showPlayerWonRoundResult(computerSelection, playerSelection);
-                                case "paper":
-                                    return "Draw";
-                                case "scissors":
-                                    return showCumputerWonRoundResult(computerSelection, playerSelection);
-                            }
-                        case "scissors":
-                            switch (computerSelection) {
-                                case "rock":
-                                    return showCumputerWonRoundResult(computerSelection, playerSelection);
-                                case "paper":
-                                    return showPlayerWonRoundResult(computerSelection, playerSelection);
-                                case "scissors":
-                                    return "Draw";
-                            }
-                    }
-                }
-
-                const playerSelection = prompt("Rock, paper, scissors?", computerPlay()).toLowerCase();
-                const computerSelection = computerPlay();
-
-                console.log(playRound(playerSelection, computerSelection));
-                console.log(showScore());
-            }
-            console.log(showGameResults());
-        }
-        game();
-    </script>
+    <button class="hand rock" data-choice="rock">✊</button>
+    <button class="hand paper" data-choice="paper">🖐️</button>
+    <button class="hand scissors" data-choice="scissors">✌️</button>
 </body>
+
+<script>
+    function capitalize(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    function game() {
+        let computerWinScore = 0;
+        let playerWinScore = 0;
+        let gameOver = false;
+        let hands = document.querySelectorAll('button.hand');
+
+        function showScore() {
+            return `Computer: ${computerWinScore}\nPlayer: ${playerWinScore}`;
+        }
+
+        function showCumputerWonRoundResult(computerSelection, playerSelection) {
+            computerWinScore++;
+            return `Round LOST! ${capitalize(computerSelection)} beats ${capitalize(playerSelection)}`;
+        }
+
+        function showPlayerWonRoundResult(computerSelection, playerSelection) {
+            playerWinScore++;
+            return `Round WON! ${capitalize(playerSelection)} beats ${capitalize(computerSelection)}`;
+        }
+
+        function showGameResults() {
+            return computerWinScore > playerWinScore ? "Computer WON" : "Player WON"
+        }
+
+        function computerPlay() {
+            const randomNum = Math.floor(Math.random() * (4 - 1)) + 1;
+            switch (randomNum) {
+                case 1:
+                    return "rock";
+                case 2:
+                    return "paper";
+                case 3:
+                    return "scissors";
+            }
+        }
+
+        function playRound(playerSelection, computerSelection) {
+            switch (playerSelection) {
+                case "rock":
+                    switch (computerSelection) {
+                        case "rock":
+                            return "Draw";
+                        case "paper":
+                            return showCumputerWonRoundResult(computerSelection, playerSelection);
+                        case "scissors":
+                            return showPlayerWonRoundResult(computerSelection, playerSelection);
+                    }
+                case "paper":
+                    switch (computerSelection) {
+                        case "rock":
+                            return showPlayerWonRoundResult(computerSelection, playerSelection);
+                        case "paper":
+                            return "Draw";
+                        case "scissors":
+                            return showCumputerWonRoundResult(computerSelection, playerSelection);
+                    }
+                case "scissors":
+                    switch (computerSelection) {
+                        case "rock":
+                            return showCumputerWonRoundResult(computerSelection, playerSelection);
+                        case "paper":
+                            return showPlayerWonRoundResult(computerSelection, playerSelection);
+                        case "scissors":
+                            return "Draw";
+                    }
+            }
+
+        }
+
+        function finishGame() {
+            computerWinScore = 0;
+            playerWinScore = 0;
+            gameOver = true;
+        }
+
+        hands.forEach(function (hand) {
+            hand.addEventListener('click', function (event) {
+                if (gameOver) {
+                    console.log("Game is over, reload page");
+                } else {
+                    const playerSelection = event.toElement.dataset['choice'];
+                    const computerSelection = computerPlay();
+                    console.log(playRound(playerSelection, computerSelection));
+                    console.log(`Computer: ${computerWinScore}\nHuman: ${playerWinScore}`)
+                    if (computerWinScore === 5) {
+                        console.log(`Machine WINS`);
+                        finishGame();
+                    } else if (playerWinScore === 5) {
+                        console.log(`Human WINS`);
+                        finishGame();
+                    };
+                };
+            });
+        });
+    };
+
+    game();
+</script>
 
 </html>
