@@ -45,8 +45,9 @@
             border: 0;
             vertical-align: baseline;
             padding: 0;
-            display: inline-flex;
+            display: flex;
             justify-content: center;
+            align-items: center;
             background-color: #fff;
             width: 120px;
             height: 120px;
@@ -87,6 +88,10 @@
 
         .btn:focus {
             outline: none;
+        }
+
+        .btn::-moz-focus-inner {
+        border: 0;
         }
 
         .btn:hover:after {
@@ -239,8 +244,8 @@
             btn.addEventListener('click', function (event) {
                 if (!gameOver) {
                     step++;
-                    let playerSelection = event.toElement.dataset['choice'];
-                    let computerSelection = computerPlay();
+                    const playerSelection = event.target.dataset['choice'];
+                    const computerSelection = computerPlay();
                     playRound(playerSelection, computerSelection);
                     displayRoundResults(playerSelection, computerSelection);
                     if (computerWinScore === 5 || playerWinScore === 5) finishGame(computerWinScore, playerWinScore);
